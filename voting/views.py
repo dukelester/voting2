@@ -9,8 +9,10 @@ from django.http import JsonResponse
 import requests
 import json
 from django.urls import reverse_lazy
-from django.views.generic.edit import DeleteView,UpdateView
+from django.views.generic.edit import DeleteView, UpdateView
 from django.contrib.auth.models import User
+
+
 # Create your views here.
 
 
@@ -18,7 +20,7 @@ def index(request):
     if not request.user.is_authenticated:
         return account_login(request)
     context = {}
-    # return render(request, "voting/login.html", context)
+    return render(request, "voting/login.html", context)
 
 
 def generate_ballot(display_controls=False):
@@ -34,18 +36,18 @@ def generate_ballot(display_controls=False):
         for candidate in candidates:
             if position.max_vote > 1:
                 instruction = "You may select up to " + \
-                    str(position.max_vote) + " candidates"
-                input_box = '<input type="checkbox" value="'+str(candidate.id)+'" class="flat-red ' + \
-                    position_name+'" name="' + \
-                    position_name+"[]" + '">'
+                              str(position.max_vote) + " candidates"
+                input_box = '<input type="checkbox" value="' + str(candidate.id) + '" class="flat-red ' + \
+                            position_name + '" name="' + \
+                            position_name + "[]" + '">'
             else:
                 instruction = "Select only one candidate"
-                input_box = '<input value="'+str(candidate.id)+'" type="radio" class="flat-red ' + \
-                    position_name+'" name="'+position_name+'">'
+                input_box = '<input value="' + str(candidate.id) + '" type="radio" class="flat-red ' + \
+                            position_name + '" name="' + position_name + '">'
             image = "/media/" + str(candidate.photo)
-            candidates_data = candidates_data + '<li>' + input_box + '<button type="button" class="btn btn-primary btn-sm btn-flat clist platform" data-fullname="'+candidate.fullname+'" data-bio="'+candidate.bio+'"><i class="fa fa-search"></i> Platform</button><img src="' + \
-                image+'" height="100px" width="100px" class="clist"><span class="cname clist">' + \
-                candidate.fullname+'</span></li>'
+            candidates_data = candidates_data + '<li>' + input_box + '<button type="button" class="btn btn-primary btn-sm btn-flat clist platform" data-fullname="' + candidate.fullname + '" data-bio="' + candidate.bio + '"><i class="fa fa-search"></i> Platform</button><img src="' + \
+                              image + '" height="100px" width="100px" class="clist"><span class="cname clist">' + \
+                              candidate.fullname + '</span></li>'
         up = ''
         if position.priority == 1:
             up = 'disabled'
@@ -88,6 +90,7 @@ def generate_ballot(display_controls=False):
 
 def fetch_ballot(request):
     output = generate_ballot(display_controls=True)
+    print(output)
     return JsonResponse(output, safe=False)
 
 
@@ -99,6 +102,7 @@ def generate_otp():
     otp = ""
     for i in range(r.randint(5, 8)):
         otp += str(r.randint(1, 9))
+        print("ooooooootttttttttttttttpppppppppp", otp)
     return otp
 
 
@@ -125,8 +129,7 @@ def dashboard(request):
 
 
 def verify(request):
-    
-    
+    print('verification ')
     context = {
         'page_title': 'OTP Verification'
     }
@@ -153,11 +156,12 @@ def resend_otp(request):
             if otp is None:
                 # Generate new OTP
                 otp = generate_otp()
+                print('OOOOooooooooooooouuuuuuuuu', otp)
                 voter.otp = otp
                 voter.save()
             try:
                 msg = "Dear " + str(user) + ", kindly use " + \
-                    str(otp) + " as your OTP"
+                      str(otp) + " as your OTP"
                 message_is_sent = send_sms(phone, msg)
                 if message_is_sent:  # * OTP was sent successfully
                     # Update how many OTP has been sent to this voter
@@ -174,9 +178,9 @@ def resend_otp(request):
 
                 # * Send OTP
     else:
-        #! Update all Voters record and set OTP to 0000
-        #! Bypass OTP verification by updating verified to 1
-        #! Redirect voters to ballot page
+        # ! Update all Voters record and set OTP to 0000
+        # ! Bypass OTP verification by updating verified to 1
+        # ! Redirect voters to ballot page
         response = bypass_otp()
     return JsonResponse({"data": response, "error": error})
 
@@ -202,9 +206,11 @@ def send_sms(phone_number, msg):
     url = "https://app.multitexter.com/v2/app/sms"
     data = {"email": email, "password": password, "message": msg,
             "sender_name": "OTP", "recipients": phone_number, "forcednd": 1}
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    headers = {"authorization": "2dee62a2162ee0ebbdf49c5380a3cab6-878f1035-67e4-4adb-92d6-9761ab8881de",
+               'Content-type': 'application/json', 'Accept': 'text/plain'}
     r = requests.post(url, data=json.dumps(data), headers=headers)
     response = r.json()
+    print(response)
     status = response.get('status', 0)
     if str(status) == '1':
         return True
@@ -272,7 +278,7 @@ def preview_vote(request):
                 if len(form_position) > max_vote:
                     error = True
                     response = "You can only choose " + \
-                        str(max_vote) + " candidates for " + position.name
+                               str(max_vote) + " candidates for " + position.name
                 else:
                     # for key, value in form.items():
                     start_tag = f"""
@@ -408,10 +414,6 @@ def submit_ballot(request):
         return redirect(reverse('voterDashboard'))
 
 
-
-
-
 class VoterDeleteView(DeleteView):
     model = User
     success_url = reverse_lazy('author-list')
-    

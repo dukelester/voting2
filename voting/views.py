@@ -8,6 +8,9 @@ from django.conf import settings
 from django.http import JsonResponse
 import requests
 import json
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView,UpdateView
+from django.contrib.auth.models import User
 # Create your views here.
 
 
@@ -122,6 +125,8 @@ def dashboard(request):
 
 
 def verify(request):
+    
+    
     context = {
         'page_title': 'OTP Verification'
     }
@@ -401,3 +406,12 @@ def submit_ballot(request):
         voter.save()
         messages.success(request, "Thanks for voting")
         return redirect(reverse('voterDashboard'))
+
+
+
+
+
+class VoterDeleteView(DeleteView):
+    model = User
+    success_url = reverse_lazy('author-list')
+    

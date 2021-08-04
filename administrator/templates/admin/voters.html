@@ -26,9 +26,12 @@
       <td>{{ voter.admin.email }}</td>
       <td>{{ voter.phone }}</td>
       
-      <td>
-        <button class='btn btn-success btn-sm edit btn-flat' data-id='{{ voter.id }}'><i class='fa fa-edit'></i> Edit</button>
-        <button class='btn btn-danger btn-sm delete btn-flat' data-id='{{ voter.id }}'><i class='fa fa-trash'></i> Delete</button>
+      
+      <td>updateVoter
+        <!-- <button onclick="location.href='{% url 'updateVoter' %}'" class='btn btn-success btn-sm edit btn-flat' ><i class='fa fa-edit'></i> Edit</button>
+        <button  onclick="location.href='{% url 'deleteVoter' %}'"  class='btn btn-danger btn-sm delete btn-flat' ><i class='fa fa-trash'></i> Delete</button> -->
+        <button onclick="location.href='{% url 'updateVoter' %}'" class='btn btn-success btn-sm edit btn-flat' ><i class='fa fa-edit'></i> Edit</button>
+        <button  onclick="location.href='{% url 'deleteVoter' %}'"  class='btn btn-danger btn-sm delete btn-flat' ><i class='fa fa-trash'></i> Delete</button>
       </td>
     </tr>
     {% endfor %}      

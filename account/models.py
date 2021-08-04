@@ -43,6 +43,7 @@ class CustomUserManager(UserManager):
 
 
 class CustomUser(AbstractUser):
+    id = models.AutoField(primary_key=True)
     USER_TYPE = ((1, "Admin"), (2, "Voter"))
     username = None  # Removed username, using email instead
     email = models.EmailField(unique=True)

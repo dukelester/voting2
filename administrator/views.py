@@ -8,6 +8,9 @@ from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import json  # Not used
 from django_renderpdf.views import PDFView
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView,UpdateView
+from django.contrib.auth.models import User
 
 
 def find_n_winners(data, n):
@@ -178,23 +181,25 @@ def view_position_by_id(request):
     return JsonResponse(context)
 
 
-def updateVoter(request):
+def updateVoter(request,pk):
+    print(pk)
     if request.method != 'POST':
-        messages.error(request, "Access Denied")
-    try:
-        instance = Voter.objects.get(id=request.POST.get('id'))
-        user = CustomUserForm(request.POST or None, instance=instance.admin)
-        voter = VoterForm(request.POST or None, instance=instance)
-        user.save()
-        voter.save()
-        messages.success(request, "Voter's bio updated")
-    except:
-        messages.error(request, "Access To This Resource Denied")
+        # messages.error(request, "Access Denied")
+        try:
+            instance = Voter.objects.get(id=request.POST.get('id'))
+            user = CustomUserForm(request.POST or None, instance=instance.admin)
+            voter = VoterForm(request.POST or None, instance=instance)
+            user.save()
+            voter.save()
+            messages.success(request, "Voter's bio updated")
+        except:
+            messages.error(request, "Access To This Resource Denied")
 
     return redirect(reverse('adminViewVoters'))
 
 
-def deleteVoter(request):
+def deleteVoter(request,pk):
+    print('jjjjjjjjjj')
     if request.method != 'POST':
         messages.error(request, "Access Denied")
     try:
@@ -205,6 +210,15 @@ def deleteVoter(request):
         messages.error(request, "Access To This Resource Denied")
 
     return redirect(reverse('adminViewVoters'))
+    
+
+class VoterDeleteView(DeleteView):
+    model = Voter
+    success_url = reverse_lazy('adminViewVoters')
+    
+class VoterUpdateview(UpdateView):
+    model = User
+    fields = ['__all__']
 
 
 def viewPositions(request):
@@ -391,3 +405,12 @@ def resetVote(request):
     Voter.objects.all().update(voted=False, verified=False, otp=None)
     messages.success(request, "All votes has been reset")
     return redirect(reverse('viewVotes'))
+
+
+
+from voting.models import Position
+def createPosition(request):
+    
+    
+    return HttpResponse('position created')
+    

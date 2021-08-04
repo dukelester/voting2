@@ -4,6 +4,7 @@ from account.models import CustomUser
 
 
 class Voter(models.Model):
+    id = models.AutoField(primary_key=True)
     admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     phone = models.CharField(max_length=11, unique=True)  # Used for OTP
     otp = models.CharField(max_length=10, null=True)
@@ -16,6 +17,7 @@ class Voter(models.Model):
 
 
 class Position(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     max_vote = models.IntegerField()
     priority = models.IntegerField()
@@ -25,6 +27,7 @@ class Position(models.Model):
 
 
 class Candidate(models.Model):
+    id = models.AutoField(primary_key=True)
     fullname = models.CharField(max_length=50)
     photo = models.ImageField(upload_to="candidates")
     bio = models.TextField()
@@ -35,6 +38,7 @@ class Candidate(models.Model):
 
 
 class Votes(models.Model):
+    id = models.AutoField(primary_key=True)
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
